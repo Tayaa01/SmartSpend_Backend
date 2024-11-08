@@ -10,6 +10,7 @@ import { CategoryModule } from './category/category.module';
 import { BudgetModule } from './budget/budget.module';
 import { ReportModule } from './report/report.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     BudgetModule,
     ReportModule,
     RecommendationModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
