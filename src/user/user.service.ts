@@ -1,5 +1,3 @@
-// src/user/user.service.ts
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -12,7 +10,6 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    // Hash the password before saving the user
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const newUser = new this.userModel({
       ...createUserDto,
@@ -50,7 +47,13 @@ export class UserService {
     }
     return deletedUser;
   }
+
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
+  }
+
+  // Method to update the user's password
+  async updatePassword(userId: string, hashedPassword: string): Promise<User> {
+    return this.userModel.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true }).exec();
   }
 }
