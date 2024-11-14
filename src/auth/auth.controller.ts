@@ -36,7 +36,16 @@ export class AuthController {
   // Forgot Password: Endpoint for requesting a password reset email
   @Post('forgot-password')
   @ApiOperation({ summary: 'Forgot password' })
-  @ApiBody({ description: 'Email to send the password reset link to.' })
+  @ApiBody({
+    schema: {
+      properties: {
+        email: {
+          type: 'string',
+          example: 'user@example.com',
+        },
+      },
+    },
+  })
   async forgotPassword(@Body('email') email: string) {
     return this.authService.forgotPassword(email);
   }
@@ -44,22 +53,20 @@ export class AuthController {
   // Reset Password: Endpoint for resetting the password
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password' })
-  @ApiBody({ description: 'New password to set' })
-  @ApiResponse({
-    status: 200,
-    description: 'Password successfully reset',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid or expired token',
+  @ApiBody({
+    schema: {
+      properties: {
+        newPassword: {
+          type: 'string',
+          example: 'newSecurePassword123',
+        },
+      },
+    },
   })
   async resetPassword(
     @Query('token') token: string, 
     @Body('newPassword') newPassword: string
   ) {
-    if (!token || !newPassword) {
-      throw new BadRequestException('Token and new password are required');
-    }
     return this.authService.resetPassword(token, newPassword);
   }
 }

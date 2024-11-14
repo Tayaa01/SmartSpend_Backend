@@ -46,7 +46,7 @@ export class AuthService {
     const resetToken = this.jwtService.sign(payload, { expiresIn: '1h' });
 
     // Send the reset token to the user's email address using Nodemailer
-    const resetLink = `http://yourdomain.com/reset-password?token=${resetToken}`;
+    const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
 
     // Create Nodemailer transporter
     const transporter = nodemailer.createTransport({
@@ -59,7 +59,7 @@ export class AuthService {
 
     // Send the reset email
     await transporter.sendMail({
-      from: '"SmartSpend App" <smartspend@gmail.com>', // Sender address
+      from: '"SmartSpend App" <tayaaayachi07@gmail.com>', // Sender address
       to: email, // Receiver email
       subject: 'Password Reset Request',
       text: `To reset your password, please click the following link: ${resetLink}`,
