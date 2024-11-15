@@ -1,6 +1,4 @@
-// src/user/user.controller.ts
-
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
@@ -25,12 +23,12 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a user by ID' })
-  @ApiResponse({ status: 200, description: 'Return a user by ID.' })
+  @Get('email')
+  @ApiOperation({ summary: 'Get a user by email' })
+  @ApiResponse({ status: 200, description: 'Return a user by email.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  findOne(@Param('id') id: string): Promise<User> {
-    return this.userService.findOne(id);
+  findByEmail(@Query('email') email: string): Promise<User> {
+    return this.userService.findByEmail(email);
   }
 
   @Patch(':id')
@@ -45,7 +43,8 @@ export class UserController {
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiResponse({ status: 200, description: 'User deleted successfully.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  deleteUser(@Param('id') id: string): Promise<User> {
-    return this.userService.deleteUser(id);
+  async deleteUser(@Param('id') id: string): Promise<{ message: string }> {
+    await this.userService.deleteUser(id);
+    return { message: `User with ID ${id} was deleted successfully.` };
   }
 }

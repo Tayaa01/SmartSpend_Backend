@@ -31,21 +31,22 @@ export class UserService {
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
-      new: true,
-    }).exec();
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(id, updateUserDto, {
+        new: true,
+      })
+      .exec();
     if (!updatedUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
     return updatedUser;
   }
 
-  async deleteUser(id: string): Promise<User> {
+  async deleteUser(id: string): Promise<void> {
     const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
     if (!deletedUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return deletedUser;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -54,6 +55,8 @@ export class UserService {
 
   // Method to update the user's password
   async updatePassword(userId: string, hashedPassword: string): Promise<User> {
-    return this.userModel.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true }).exec();
+    return this.userModel
+      .findByIdAndUpdate(userId, { password: hashedPassword }, { new: true })
+      .exec();
   }
 }
