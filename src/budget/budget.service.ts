@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateBudgetDto } from './dto/create-budget.dto';
 import { UpdateBudgetDto } from './dto/update-budget.dto';
+import { Budget } from './schemas/budget.schema';
 
 @Injectable()
 export class BudgetService {
-  create(createBudgetDto: CreateBudgetDto) {
-    return 'This action adds a new budget';
+  constructor(@InjectModel(Budget.name) private readonly budgetModel: Model<Budget>) {}
+
+  // Créer un nouveau budget
+  async create(createBudgetDto: CreateBudgetDto): Promise<Budget> {
+    const createdBudget = new this.budgetModel(createBudgetDto);
+    return createdBudget.save();
   }
 
-  findAll() {
-    return `This action returns all budget`;
+  // Récupérer tous les budgets
+  async findAll(): Promise<Budget[]> {
+    return this.budgetModel.find().populate('user').exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} budget`;
+  // Récupérer un budget par ID
+  async findOne(id: string): Promise<Budget> {
+    const budget = await this.budgetModel.findById(id).populate('user').exec();
+    if (!budget) {
+      throw new NotFoundException(`Budget with ID ${id} not found`);
+    }
+    return budget;
   }
 
-  update(id: number, updateBudgetDto: UpdateBudgetDto) {
-    return `This action updates a #${id} budget`;
+  // Mettre à jour un budget existant
+  async update(id: string, updateBudgetDto: UpdateBudgetDto): Promise<Budget> {
+    const updatedBudget = await this.budgetModel
+      .findByIdAndUpdate(id, updateBudgetDto, { new: true })
+      .exec();
+    if (!updatedBudget) {
+      throw new NotFoundException(`Budget with ID ${id} not found`);
+    }
+    return updatedBudget;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} budget`;
+  // Supprimer un budget
+  async remove(id: string): Promise<void> {
+    const result = await this.budgetModel.findByIdAndDelete(id).exec();
+    if (!result) {
+      throw new NotFoundException(`Budget with ID ${id} not found`);
+    }
   }
 }
