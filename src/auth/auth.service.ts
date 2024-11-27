@@ -56,74 +56,88 @@ export class AuthService {
 
     // Create an HTML email template with inline CSS
     const emailHtml = `
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              background-color: #f4f4f4;
-              padding: 20px;
-              color: #333;
-            }
-            .container {
-              width: 100%;
-              max-width: 600px;
-              margin: 0 auto;
-              background-color: #fff;
-              padding: 20px;
-              border-radius: 8px;
-              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-            .header {
-              text-align: center;
-              margin-bottom: 20px;
-            }
-            .header h1 {
-              color: #333;
-              font-size: 24px;
-            }
-            .message {
-              margin: 20px 0;
-              font-size: 16px;
-            }
-            .button {
-              display: inline-block;
-              background-color: #007bff;
-              color: #fff;
-              padding: 10px 20px;
-              text-decoration: none;
-              border-radius: 5px;
-              font-weight: bold;
-              text-align: center;
-            }
-            .footer {
-              margin-top: 30px;
-              font-size: 12px;
-              text-align: center;
-              color: #888;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Password Reset Request</h1>
-            </div>
-            <div class="message">
-              <p>Hello ${user.name},</p>
-              <p>We received a request to reset your password. Please use the following token to reset your password:</p>
-              <h2 style="text-align: center; font-size: 32px; color: #333;">${resetToken}</h2>
-              <p style="text-align: center;">This token is valid for 15 minutes. Please reset your password as soon as possible.</p>
-              <p>If you didn't request a password reset, please ignore this email.</p>
-            </div>
-            <div class="footer">
-              <p>Best regards,</p>
-              <p>SmartSpend Team</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+          color: #333;
+        }
+        .container {
+          width: 100%;
+          max-width: 600px;
+          margin: 40px auto;
+          background-color: #fff;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          background-color: #8e7cc3;
+          color: #fff;
+          text-align: center;
+          padding: 20px;
+        }
+        .header h1 {
+          font-size: 24px;
+          margin: 0;
+        }
+        .body {
+          padding: 20px;
+        }
+        .body p {
+          line-height: 1.6;
+          margin: 10px 0;
+        }
+        .token {
+          text-align: center;
+          margin: 30px 0;
+          font-size: 32px;
+          font-weight: bold;
+          color: #8e7cc3;
+          border: 2px dashed #8e7cc3;
+          padding: 10px;
+          border-radius: 8px;
+          background-color: #f9f8fc;
+        }
+        .footer {
+          background-color: #f4f4f4;
+          color: #888;
+          text-align: center;
+          padding: 15px;
+          font-size: 12px;
+        }
+        .footer a {
+          color: #8e7cc3;
+          text-decoration: none;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Password Reset Request</h1>
+        </div>
+        <div class="body">
+          <p>Hello ${user.name},</p>
+          <p>We received a request to reset your password. Please use the token below to proceed:</p>
+          <div class="token">${resetToken}</div>
+          <p>This token is valid for 15 minutes. If you didn’t request this, you can safely ignore this email.</p>
+        </div>
+        <div class="footer">
+          <p>Best regards,</p>
+          <p><strong>SmartSpend Team</strong></p>
+          <p><a href="#">Visit Our Website</a></p>
+        </div>
+      </div>
+    </body>
+  </html>
+`;
+
+
 
     // Create Nodemailer transporter with Gmail credentials
     const transporter = nodemailer.createTransport({

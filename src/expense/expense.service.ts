@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
-import { CreateExpenseDto } from './dto/create-expense.dto';
-import { UpdateExpenseDto } from './dto/update-expense.dto';
+// src/expense/expense.service.ts
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Expense } from './schemas/expense.schema'; // Expense schema
+import { CreateExpenseDto } from './dto/create-expense.dto'; // DTO for creating an expense
+import { UpdateExpenseDto } from './dto/update-expense.dto'; // DTO for updating an expense
 
 @Injectable()
 export class ExpenseService {
-  create(createExpenseDto: CreateExpenseDto) {
-    return 'This action adds a new expense';
+  constructor(@InjectModel(Expense.name) private expenseModel: Model<Expense>) {}
+
+  async findAllByUser(userId: string): Promise<Expense[]> {
+    return this.expenseModel.find({ user: userId }).exec(); // Query expenses for the user
   }
 
-  findAll() {
-    return `This action returns all expense`;
+  async findOne(id: string, userId: string): Promise<Expense> {
+    const expense = await this.expenseModel.findOne({ _id: id, user: userId }).exec();
+    if (!expense) {
+      throw new NotFoundException('Expense not found');
+    }
+    return expense;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} expense`;
+  async create(createExpenseDto: CreateExpenseDto): Promise<Expense> {
+    const createdExpense = new this.expenseModel(createExpenseDto);
+    return createdExpense.save(); // Save the new expense
   }
 
-  update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    return `This action updates a #${id} expense`;
+  async update(id: string, updateExpenseDto: UpdateExpenseDto, userId: string): Promise<Expense> {
+    const expense = await this.expenseModel.findOne({ _id: id, user: userId }).exec();
+    if (!expense) {
+      throw new NotFoundException('Expense not found');
+    }
+    Object.assign(expense, updateExpenseDto); // Update expense details
+    return expense.save(); // Save the updated expense
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} expense`;
+  async remove(id: string, userId: string): Promise<void> {
+    const expense = await this.expenseModel.findOne({ _id: id, user: userId }).exec();
+    if (!expense) {
+      throw new NotFoundException('Expense not found');
+    }
+    await this.expenseModel.deleteOne({ _id: id, user: userId }).exec(); // Use deleteOne instead of remove
   }
 }

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { User } from '../../user/schemas/user.schema';
 
 @Schema()
 export class Budget extends Document {
@@ -7,10 +8,13 @@ export class Budget extends Document {
   totalAmount: number;
 
   @Prop({ required: true })
-  category: string;
+  period: string;
 
   @Prop({ required: true })
-  period: string;
+  savings: number;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user: User;
 }
 
 export const BudgetSchema = SchemaFactory.createForClass(Budget);

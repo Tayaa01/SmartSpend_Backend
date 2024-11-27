@@ -9,11 +9,11 @@ import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
-    UserModule, // Import UserModule to access user data
+    UserModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your_jwt_secret', // Use environment variable for the secret
-      signOptions: { expiresIn: '12h' }, // Token expiration
+      secret: 'mySuperSecretKey123', // Using your provided secret key
+      signOptions: { expiresIn: '12h' },
     }),
   ],
   providers: [AuthService, JwtStrategy],
