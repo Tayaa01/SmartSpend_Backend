@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { Category } from '../../category/schemas/category.Schema'; // Update the import path based on your folder structure
+import { User } from '../../user/schemas/user.schema';
 
 @Schema()
 export class Expense extends Document {
@@ -12,11 +14,12 @@ export class Expense extends Document {
   @Prop({ required: true })
   date: Date;
 
-  @Prop({ required: true })
-  category: string;
+  @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
+  category: Types.ObjectId; // This links to the Category schema
 
-  @Prop()
-  source: string;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user: User;
+
 }
 
 export const ExpenseSchema = SchemaFactory.createForClass(Expense);
