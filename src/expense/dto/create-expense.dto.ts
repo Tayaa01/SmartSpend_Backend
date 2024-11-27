@@ -1,24 +1,24 @@
-import { IsNotEmpty, IsNumber, IsString, IsOptional, IsDateString } from 'class-validator';
+// src/expense/dto/create-expense.dto.ts
+import { IsNotEmpty, IsNumber, IsString, IsDateString, IsMongoId } from 'class-validator';
 
 export class CreateExpenseDto {
   @IsNotEmpty()
   @IsNumber()
   amount: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  description?: string;
+  description: string;
 
   @IsNotEmpty()
   @IsDateString()
   date: string;
 
   @IsNotEmpty()
-  @IsString()
-  category: string; // This will accept the Category ID
+  @IsMongoId()
+  category: string;
 
   @IsNotEmpty()
-  @IsString()
-  user: string;
-
+  @IsMongoId()
+  user: string; // Injected from authenticated user
 }
