@@ -5,14 +5,12 @@ import { Expense, ExpenseSchema } from './schemas/expense.schema';
 import { ExpenseService } from './expense.service';
 import { ExpenseController } from './expense.controller';
 import { JwtModule } from '@nestjs/jwt';  // Import JwtModule directly
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Expense.name, schema: ExpenseSchema }]),
-    JwtModule.register({
-      secret: 'mySuperSecretKey123', // Use the same secret key as in AuthModule
-      signOptions: { expiresIn: '12h' },
-    }),
+    AuthModule,
   ],
   controllers: [ExpenseController],
   providers: [ExpenseService],

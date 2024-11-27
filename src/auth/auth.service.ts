@@ -30,6 +30,7 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+  
 
   // Validate the user by JWT token payload (for protected routes)
   async validateUserByJwt(payload: any): Promise<User> {
@@ -184,5 +185,13 @@ export class AuthService {
     this.resetTokens.delete(email);
 
     return { message: 'Password successfully reset' };
+  }
+  async getCurrentUser(token: string): Promise<User> {
+    try {
+      const decodedToken = this.jwtService.verify(token);
+      return await this.userService.findOne(decodedToken.sub);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }
