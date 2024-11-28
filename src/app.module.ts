@@ -11,6 +11,7 @@ import { BudgetModule } from './budget/budget.module';
 import { ReportModule } from './report/report.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { AuthModule } from './auth/auth.module';
+import { IncomeModule } from './income/income.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuthModule } from './auth/auth.module';
     ReportModule,
     RecommendationModule,
     AuthModule,
+    IncomeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
