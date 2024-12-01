@@ -1,16 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Recommendation extends Document {
-  @Prop({ required: true })
-  advice: string;
+  @Prop({ type: String, required: true })
+  recommendationText: string; // The AI-generated recommendation text
 
-  @Prop({ required: true })
-  date: Date;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user: Types.ObjectId; // Reference to the User who owns this recommendation
 
-  @Prop({ required: true })
-  user: string;
+  @Prop({ type: Date, required: true })
+  date: Date; // The date when the recommendation was generated
 }
 
 export const RecommendationSchema = SchemaFactory.createForClass(Recommendation);

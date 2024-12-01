@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
-import { CreateRecommendationDto } from './dto/create-recommendation.dto';
-import { UpdateRecommendationDto } from './dto/update-recommendation.dto';
+import { Recommendation } from './schemas/recommendation.schema';
 
-@Controller('recommendation')
+@Controller('recommendations')
 export class RecommendationController {
   constructor(private readonly recommendationService: RecommendationService) {}
 
-  @Post()
-  create(@Body() createRecommendationDto: CreateRecommendationDto) {
-    return this.recommendationService.create(createRecommendationDto);
-  }
+  @Get('generate')
+  async generateRecommendation(
+    @Query('userToken') userToken: string,
+    @Query('period') period: string,
+  ): Promise<Recommendation> {
+    try {
+      if (!userToken || !period) {
+        throw new HttpException('Missing userToken or period', HttpStatus.BAD_REQUEST);
+      }
 
-  @Get()
-  findAll() {
-    return this.recommendationService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.recommendationService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRecommendationDto: UpdateRecommendationDto) {
-    return this.recommendationService.update(+id, updateRecommendationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.recommendationService.remove(+id);
+      const recommendation = await this.recommendationService.generateRecommendation(userToken, period);
+      return recommendation;
+    } catch (error) {
+      console.error('Error generating recommendation:', error.message);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

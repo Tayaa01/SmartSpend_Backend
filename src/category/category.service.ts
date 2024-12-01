@@ -57,4 +57,14 @@ export class CategoryService {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
   }
+  async getAllExpenseCategories(): Promise<string[]> {
+    // Fetch all categories where type is 'Expense' and return only the name field
+    const expenseCategories = await this.categoryModel
+      .find({ type: 'Expense' })
+      .select('name') // Only select the 'name' field
+      .exec();
+  
+    // Return an array of names
+    return expenseCategories.map((category) => category.name);
+  }
 }

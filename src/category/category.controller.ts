@@ -58,6 +58,22 @@ export class CategoryController {
   async findAll() {
     return this.categoryService.findAll();
   }
+  /**
+   * Récupère toutes les catégories de type 'expense'.
+   */
+  @Get('expense')
+@ApiOperation({ summary: 'Retrieve all expense category names' })
+@ApiResponse({
+  status: 200,
+  description: 'A list of all expense category names.',
+  schema: {
+    example: ['Groceries', 'Rent', 'Utilities'],
+  },
+})
+async getExpenseCategories() {
+  return this.categoryService.getAllExpenseCategories();
+}
+
 
   /**
    * Récupère une catégorie par son ID.
@@ -122,4 +138,6 @@ export class CategoryController {
   async remove(@Param('id') id: string) {
     await this.categoryService.remove(id);
   }
+
+  
 }
