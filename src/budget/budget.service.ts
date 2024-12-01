@@ -1,50 +1,34 @@
+// src/budget/budget.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateBudgetDto } from './dto/create-budget.dto';
-import { UpdateBudgetDto } from './dto/update-budget.dto';
-import { Budget } from './schemas/budget.schema';
+import { Budget } from './schemas/budget.schema'; // Budget schema
+import { IncomeService } from '../income/income.service'; // Inject IncomeService
+import { ExpenseService } from '../expense/expense.service'; // Inject ExpenseService
 
 @Injectable()
 export class BudgetService {
-  constructor(@InjectModel(Budget.name) private readonly budgetModel: Model<Budget>) {}
+  constructor(
+    @InjectModel(Budget.name) private budgetModel: Model<Budget>,
+    private readonly incomeService: IncomeService,
+    private readonly expenseService: ExpenseService,
+  ) {}
 
-  // Créer un nouveau budget
-  async create(createBudgetDto: CreateBudgetDto): Promise<Budget> {
-    const createdBudget = new this.budgetModel(createBudgetDto);
-    return createdBudget.save();
-  }
+  // Get budget for a specific user and period
+  async getBudgetForMonth(userId: string, period: string): Promise<Budget> {
+    const totalIncome = await this.incomeService.getTotalIncomeByUserAndPeriod(userId, period);
+    const totalExpense = await this.expenseService.getTotalExpensesByUserAndPeriod(userId, period);
 
-  // Récupérer tous les budgets
-  async findAll(): Promise<Budget[]> {
-    return this.budgetModel.find().populate('user').exec();
-  }
+    const savings = totalIncome - totalExpense;
 
-  // Récupérer un budget par ID
-  async findOne(id: string): Promise<Budget> {
-    const budget = await this.budgetModel.findById(id).populate('user').exec();
-    if (!budget) {
-      throw new NotFoundException(`Budget with ID ${id} not found`);
-    }
-    return budget;
-  }
+    // The budget is calculated as the difference between income and expenses
+    const budget = new this.budgetModel({
+      Budget: totalIncome - totalExpense,
+      period,
+      savings,
+      user: userId,
+    });
 
-  // Mettre à jour un budget existant
-  async update(id: string, updateBudgetDto: UpdateBudgetDto): Promise<Budget> {
-    const updatedBudget = await this.budgetModel
-      .findByIdAndUpdate(id, updateBudgetDto, { new: true })
-      .exec();
-    if (!updatedBudget) {
-      throw new NotFoundException(`Budget with ID ${id} not found`);
-    }
-    return updatedBudget;
-  }
-
-  // Supprimer un budget
-  async remove(id: string): Promise<void> {
-    const result = await this.budgetModel.findByIdAndDelete(id).exec();
-    if (!result) {
-      throw new NotFoundException(`Budget with ID ${id} not found`);
-    }
+    return budget.save();
   }
 }

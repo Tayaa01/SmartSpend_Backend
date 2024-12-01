@@ -4,7 +4,7 @@ import { Category } from '../../category/schemas/category.Schema'; // Ensure cor
 import { User } from '../../user/schemas/user.schema';
 
 @Schema()
-export class Expense extends Document {
+export class Income extends Document {
   @Prop({ required: true })
   amount: number;
 
@@ -23,4 +23,4 @@ export class Expense extends Document {
   user: User;
 }
 
-export const ExpenseSchema = SchemaFactory.createForClass(Expense);
+export const IncomeSchema = SchemaFactory.createForClass(Income);

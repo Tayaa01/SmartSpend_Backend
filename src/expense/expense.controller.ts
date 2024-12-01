@@ -55,6 +55,17 @@ export class ExpenseController {
 
     return this.expenseService.findAllByUser(user.id); // Filter expenses by user ID
   }
+  @Get('total')
+@ApiResponse({ status: 200, description: 'Fetch total expenses for the user.' })
+async getTotalExpenses(@Query('token') token: string): Promise<{ total: number }> {
+  const user = await this.authService.getCurrentUser(token); // Get current user from token
+  if (!user) {
+    throw new UnauthorizedException('Invalid or expired token');
+  }
+
+  const total = await this.expenseService.getTotalExpensesByUser(user.id); // Get total expenses
+  return { total }; // Return the total amount
+}
 
   // Get a single expense by ID
   @Get(':id')
@@ -110,4 +121,6 @@ export class ExpenseController {
 
     return this.expenseService.remove(id, user.id); // Remove the expense for the user
   }
+  
+
 }

@@ -43,4 +43,20 @@ export class ExpenseService {
     }
     await this.expenseModel.deleteOne({ _id: id, user: userId }).exec(); // Use deleteOne instead of remove
   }
+  async getTotalExpensesByUser(userId: string): Promise<number> {
+    const expenses = await this.expenseModel.find({ user: userId }).exec(); // Fetch all expenses for the user
+    return expenses.reduce((total, expense) => total + expense.amount, 0); // Sum up the amounts
+  }
+
+  // src/expense/expense.service.ts
+async getTotalExpensesByUserAndPeriod(userId: string, period: string): Promise<number> {
+  const expenses = await this.expenseModel
+    .find({ user: userId, date: { $gte: new Date(`${period}-01`), $lt: new Date(`${period}-31`) } })
+    .exec();
+  return expenses.reduce((total, expense) => total + expense.amount, 0);
+}
+
+  
+  
+  
 }

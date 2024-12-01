@@ -1,41 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode } from '@nestjs/common';
+// src/budget/budget.controller.ts
+import { Controller, Get, Query, UnauthorizedException } from '@nestjs/common';
 import { BudgetService } from './budget.service';
-import { CreateBudgetDto } from './dto/create-budget.dto';
-import { UpdateBudgetDto } from './dto/update-budget.dto';
+import { Budget } from './schemas/budget.schema';
+import { AuthService } from 'src/auth/auth.service'; // Inject AuthService
 
 @Controller('budget')
 export class BudgetController {
-  constructor(private readonly budgetService: BudgetService) {}
+  constructor(
+    private readonly budgetService: BudgetService,
+    private readonly authService: AuthService, // Inject AuthService to get current user from token
+  ) {}
 
-  // Créer un nouveau budget
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createBudgetDto: CreateBudgetDto) {
-    return this.budgetService.create(createBudgetDto);
-  }
-
-  // Récupérer tous les budgets
+  // Get budget for a specific user and period
   @Get()
-  async findAll() {
-    return this.budgetService.findAll();
-  }
+  async getBudget(
+    @Query('token') token: string, // Accept token as query parameter
+    @Query('period') period: string, // Accept period (month) as query parameter
+  ): Promise<Budget> {
+    const user = await this.authService.getCurrentUser(token); // Get current user from token
+    if (!user) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
 
-  // Récupérer un budget par ID
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.budgetService.findOne(id);
-  }
-
-  // Mettre à jour un budget par ID
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateBudgetDto: UpdateBudgetDto) {
-    return this.budgetService.update(id, updateBudgetDto);
-  }
-
-  // Supprimer un budget par ID
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string) {
-    await this.budgetService.remove(id);
+    return this.budgetService.getBudgetForMonth(user.id, period); // Get budget for the user and period
   }
 }

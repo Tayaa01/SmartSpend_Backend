@@ -5,7 +5,7 @@ import { User } from '../../user/schemas/user.schema';
 @Schema()
 export class Budget extends Document {
   @Prop({ required: true })
-  totalAmount: number;
+  Budget: number;
 
   @Prop({ required: true })
   period: string;

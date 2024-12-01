@@ -3,8 +3,7 @@ import { IsNotEmpty, IsNumber, IsString, IsMongoId, Min } from 'class-validator'
 export class CreateBudgetDto {
   @IsNotEmpty()
   @IsNumber()
-  @Min(0)
-  totalAmount: number;
+  Budget: number;
 
   @IsNotEmpty()
   @IsString()
@@ -12,7 +11,6 @@ export class CreateBudgetDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @Min(0)
   savings: number;
 
   @IsNotEmpty()
