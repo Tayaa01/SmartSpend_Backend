@@ -144,8 +144,8 @@ export class AuthService {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'tayaaayachi07@gmail.com',
-        pass: 'wdnz zlci zcbg gpvj',  // Your Gmail password or App Password if 2FA is enabled
+        user: process.env.EMAIL_USER,  // Your Gmail email address
+        pass: process.env.EMAIL_PASSWORD,  // Your Gmail password or App Password if 2FA is enabled
       },
     });
 

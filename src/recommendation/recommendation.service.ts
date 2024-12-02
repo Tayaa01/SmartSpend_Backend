@@ -22,7 +22,7 @@ export class RecommendationService {
     private authService: AuthService, // Inject AuthService
   ) {
     // Initialize GoogleGenerativeAI with your API key
-    this.genAI = new GoogleGenerativeAI("AIzaSyAZ7jUxSLBt9hWXQz6D0MRhMZ8jllfY9ss"); // Replace with your actual API key
+    this.genAI = new GoogleGenerativeAI(process.env.API_KEY); // Replace with your actual API key
   }
 
   // Method to generate AI-based recommendations
