@@ -11,7 +11,10 @@ export class IncomeService {
 
   // Get all incomes for the user
   async findAllByUser(userId: string): Promise<Income[]> {
-    return this.incomeModel.find({ user: userId }).exec();
+    return this.incomeModel
+      .find({ user: userId }) // Query expenses for the user
+      .sort({ date: -1 }) // Sort by date in descending order (recent first)
+      .exec(); // Execute the query
   }
 
   // Get a single income by ID
