@@ -55,7 +55,7 @@ export class RecommendationService {
 
       Categories like 'housing', 'groceries', and 'health care' are mandatory and should not be reduced. Suggest how the user can reduce spending in other categories.
       give simple and actionable recommendations to help the user save money and improve their financial health.
-      i want 2 sentence response that is easy to understand and implement.
+      i want 3 sentence response that is easy to understand and implement.
     `;
 
     // Call the Google Gemini API for recommendation
