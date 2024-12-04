@@ -11,8 +11,13 @@ export class ExpenseService {
   constructor(@InjectModel(Expense.name) private expenseModel: Model<Expense>) {}
 
   async findAllByUser(userId: string): Promise<Expense[]> {
-    return this.expenseModel.find({ user: userId }).exec(); // Query expenses for the user
+    return this.expenseModel
+      .find({ user: userId }) // Query expenses for the user
+      .sort({ date: -1 }) // Sort by date in descending order (recent first)
+      .exec(); // Execute the query
   }
+  
+  
 
   async findOne(id: string, userId: string): Promise<Expense> {
     const expense = await this.expenseModel.findOne({ _id: id, user: userId }).exec();
