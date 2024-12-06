@@ -74,6 +74,18 @@ async getExpenseCategories() {
   return this.categoryService.getAllExpenseCategories();
 }
 
+@Get('income')
+@ApiOperation({ summary: 'Retrieve all income category names' })
+@ApiResponse({
+  status: 200,
+  description: 'A list of all income category names.',
+  schema: {
+    example: ['Salary', 'Other'],
+  },
+})
+async getIncomeCategories() {
+  return this.categoryService.getAllIncomeCategories();
+}
 
   /**
    * Récupère une catégorie par son ID.
