@@ -11,7 +11,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({
+  @ApiResponse({ 
     status: 200,
     description: 'Login successful',
   })
