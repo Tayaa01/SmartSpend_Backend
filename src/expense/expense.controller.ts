@@ -1,10 +1,10 @@
-import { Controller, Post, Body, Get, Param, Delete, Put, Query, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, Put, Query, UnauthorizedException, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ExpenseService } from './expense.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
-import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { Expense } from './schemas/expense.schema';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags ,ApiConsumes} from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service'; // Inject AuthService
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Expense')
 @Controller('expense')
@@ -44,6 +44,40 @@ export class ExpenseController {
     return this.expenseService.create(createExpenseDto);
   }
 
+  @Post('scan-bill')
+@UseInterceptors(FileInterceptor('file')) // 'file' is the name of the field
+@ApiConsumes('multipart/form-data') // Specify content type
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      file: {
+        type: 'string',
+        format: 'binary', // Swagger UI will show an upload button for this
+      },
+      
+    },
+  },
+})
+async scanBill(
+  @UploadedFile() file: Express.Multer.File,
+  @Query('token') token: string, // Token passed as a query parameter
+) {
+  if (!file) {
+    throw new Error('File is required!');
+  }
+
+  // Get the current user from the token
+  const user = await this.authService.getCurrentUser(token);
+  if (!user) {
+    throw new UnauthorizedException('Invalid or expired token');
+  }
+
+  // Pass the file and user ID to the service
+  return this.expenseService.scanBill(file, user.id);
+}
+
+
   // Get all expenses for the authenticated user
   @Get()
   @ApiResponse({ status: 200, description: 'Fetch all expenses for the user.' })
@@ -55,17 +89,6 @@ export class ExpenseController {
 
     return this.expenseService.findAllByUser(user.id); // Filter expenses by user ID
   }
-  @Get('total')
-@ApiResponse({ status: 200, description: 'Fetch total expenses for the user.' })
-async getTotalExpenses(@Query('token') token: string): Promise<{ total: number }> {
-  const user = await this.authService.getCurrentUser(token); // Get current user from token
-  if (!user) {
-    throw new UnauthorizedException('Invalid or expired token');
-  }
-
-  const total = await this.expenseService.getTotalExpensesByUser(user.id); // Get total expenses
-  return { total }; // Return the total amount
-}
 
   // Get a single expense by ID
   @Get(':id')
@@ -83,7 +106,7 @@ async getTotalExpenses(@Query('token') token: string): Promise<{ total: number }
   @Put(':id')
   @ApiBody({
     description: 'Update an existing expense',
-    type: UpdateExpenseDto,
+    type: CreateExpenseDto,
     examples: {
       'application/json': {
         value: {
@@ -98,7 +121,7 @@ async getTotalExpenses(@Query('token') token: string): Promise<{ total: number }
   @ApiResponse({ status: 200, description: 'Expense updated successfully.' })
   async update(
     @Param('id') id: string,
-    @Body() updateExpenseDto: UpdateExpenseDto,
+    @Body() updateExpenseDto: CreateExpenseDto,
     @Query('token') token: string, // Accept token as query parameter
   ): Promise<Expense> {
     const user = await this.authService.getCurrentUser(token); // Get current user from token
@@ -121,6 +144,4 @@ async getTotalExpenses(@Query('token') token: string): Promise<{ total: number }
 
     return this.expenseService.remove(id, user.id); // Remove the expense for the user
   }
-  
-
 }

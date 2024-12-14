@@ -23,6 +23,9 @@ export class CategoryService {
   async findAll(): Promise<Category[]> {
     return this.categoryModel.find().exec();
   }
+  async findByName(name: string): Promise<Category | null> {
+    return this.categoryModel.findOne({ name }).exec();
+  }
 
   /**
    * Récupère une catégorie par son ID.
