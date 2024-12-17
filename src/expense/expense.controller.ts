@@ -90,6 +90,18 @@ async scanBill(
     return this.expenseService.findAllByUser(user.id); // Filter expenses by user ID
   }
 
+  // Add this method to get expenses by email
+  @Get('by-email')
+  @ApiResponse({ status: 200, description: 'Fetch all expenses for the user by email.' })
+  async findAllByEmail(@Query('email') email: string): Promise<Expense[]> {
+    const user = await this.authService.getUserByEmail(email); // Get user by email
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return this.expenseService.findAllByUser(user.id); // Filter expenses by user ID
+  }
+
   // Get a single expense by ID
   @Get(':id')
   @ApiResponse({ status: 200, description: 'Fetch an expense by its ID.' })

@@ -186,6 +186,16 @@ export class AuthService {
 
     return { message: 'Password successfully reset' };
   }
+
+  // Add this method to get user by email
+  async getUserByEmail(email: string): Promise<User> {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return user;
+  }
+
   async getCurrentUser(token: string): Promise<User> {
     try {
       const decodedToken = this.jwtService.verify(token);

@@ -81,6 +81,18 @@ export class IncomeController {
     return this.incomeService.findOne(id, user.id);
   }
 
+  // Add this method to get incomes by email
+  @Get('by-email')
+  @ApiResponse({ status: 200, description: 'Fetch all incomes for the user by email.' })
+  async findAllByEmail(@Query('email') email: string): Promise<Income[]> {
+    const user = await this.authService.getUserByEmail(email); // Get user by email
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return this.incomeService.findAllByUser(user.id); // Filter incomes by user ID
+  }
+
   // Update an existing income
   @Put(':id')
   @ApiBody({
