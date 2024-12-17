@@ -21,7 +21,7 @@ export class AuthController {
   })
   async login(@Body() loginDto: LoginDto) {
     const { email, password } = loginDto;
-    const user = await this.authService.validateUser(email, password);
+    const user = await this.authService.validateUser(email.toLowerCase(), password); // Convert email to lowercase
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }

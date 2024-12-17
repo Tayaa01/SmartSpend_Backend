@@ -16,7 +16,7 @@ export class AuthService {
 
   // Validate the user credentials (email and password)
   async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmail(email.toLowerCase()); // Convert email to lowercase
     if (user && await bcrypt.compare(password, user.password)) {
       return user;
     }
