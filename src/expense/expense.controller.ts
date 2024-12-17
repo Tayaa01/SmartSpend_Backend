@@ -90,7 +90,7 @@ async scanBill(
     return this.expenseService.findAllByUser(user.id); // Filter expenses by user ID
   }
 
-  // Add this method to get expenses by email
+  // Add this method to get expenses by email without token validation
   @Get('by-email')
   @ApiResponse({ status: 200, description: 'Fetch all expenses for the user by email.' })
   async findAllByEmail(@Query('email') email: string): Promise<Expense[]> {
