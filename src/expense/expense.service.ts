@@ -102,7 +102,7 @@ export class ExpenseService {
  * @param userId - ID of the user to associate expenses with
  * @returns saved Expense objects
  */
-  async scanBill(file: Express.Multer.File, userId: string): Promise<Expense[]> {
+  async scanBill(file: Express.Multer.File, userId: string): Promise<Expense> {
     if (!file) {
       throw new Error('File is required');
     }
@@ -155,7 +155,10 @@ export class ExpenseService {
       throw new Error('Invalid response from AI service');
     }
   
-    const savedExpenses: Expense[] = [];
+    let totalAmount = 0;
+    const billDetails = [];
+    let matchedCategoryId = null;
+  
     for (const item of extractedExpenses) {
       const { amount, description, category } = item;
   
@@ -172,30 +175,38 @@ export class ExpenseService {
       if (!matchedCategory) {
         throw new Error('Default "Other" category is missing');
       }
+      matchedCategoryId = matchedCategory._id;
   
-      const expense = new this.expenseModel({
-        amount,
-        description,
-        category: matchedCategory._id,
-        user: userId,
-        date: new Date(),
+      totalAmount += parseFloat(amount);
+      billDetails.push({
+        description: description,
+        quantity: item.quantity || 1,
+        price: parseFloat(item.amount) || 0,
       });
-  
-      try {
-        const savedExpense = await expense.save();
-        savedExpenses.push(savedExpense);
-      } catch (err) {
-        console.error('Error saving expense:', err.message);
-      }
     }
   
-    return savedExpenses;
+    // Generate a brief AI-based description for the entire bill
+    let expenseDescription = 'Scanned Bill';
+    try {
+      const summaryPrompt = `
+        Summarize the following items in one short phrase of max 5 words:
+        ${JSON.stringify(billDetails)}
+      `;
+      const descResult = await this.genAIFlashModel.generateContent([summaryPrompt]);
+      expenseDescription = (await (await descResult.response).text()).trim() || expenseDescription;
+    } catch (err) {
+      console.error('Error generating description:', err.message);
+    }
+  
+    const expense = new this.expenseModel({
+      amount: totalAmount,
+      description: expenseDescription,
+      category: matchedCategoryId, // Use matchedCategoryId
+      user: userId,
+      date: new Date(),
+      billDetails,
+    });
+  
+    return expense.save();
   }
-  
-  
-
-
-
-  
-  
 }
