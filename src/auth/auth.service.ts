@@ -62,10 +62,10 @@ export class AuthService {
       <style>
         body {
           font-family: Arial, sans-serif;
-          background-color: #f4f4f4;
+          background-color: rgb(229, 221, 200);  /* sand */
           margin: 0;
           padding: 0;
-          color: #333;
+          color: rgb(27, 27, 31);  /* supportingColor */
         }
         .container {
           width: 100%;
@@ -74,10 +74,10 @@ export class AuthService {
           background-color: #fff;
           border-radius: 8px;
           overflow: hidden;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 10px rgba(27, 27, 31, 0.1);
         }
         .header {
-          background-color: #8e7cc3;
+          background-color: rgb(47, 126, 121);  /* mostImportantColor */
           color: #fff;
           text-align: center;
           padding: 20px;
@@ -98,21 +98,21 @@ export class AuthService {
           margin: 30px 0;
           font-size: 32px;
           font-weight: bold;
-          color: #8e7cc3;
-          border: 2px dashed #8e7cc3;
+          color: rgb(47, 126, 121);  /* mostImportantColor */
+          border: 2px dashed rgb(98, 91, 113);  /* importantColor */
           padding: 10px;
           border-radius: 8px;
-          background-color: #f9f8fc;
+          background-color: rgba(229, 221, 200, 0.3);  /* sand with opacity */
         }
         .footer {
-          background-color: #f4f4f4;
-          color: #888;
+          background-color: rgb(47, 126, 121);  /* importantColor */
+          color: #fff;
           text-align: center;
           padding: 15px;
           font-size: 12px;
         }
         .footer a {
-          color: #8e7cc3;
+          color: rgb(229, 221, 200);  /* sand */
           text-decoration: none;
         }
       </style>
