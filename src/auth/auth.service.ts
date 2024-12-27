@@ -204,4 +204,30 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+
+  async verifyResetToken(token: string): Promise<{ isValid: boolean }> {
+    const resetData = Array.from(this.resetTokens.values()).find((data) => data.token === token);
+    return {
+      isValid: !!resetData && resetData.expiry > Date.now()
+    };
+  }
+
+  async changePassword(userId: string, oldPassword: string, newPassword: string) {
+    const user = await this.userService.findOne(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Verify old password
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Hash and update new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.userService.updatePassword(user.id, hashedPassword);
+
+    return { message: 'Password successfully changed' };
+  }
 }

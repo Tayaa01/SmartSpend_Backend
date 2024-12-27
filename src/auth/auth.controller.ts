@@ -81,4 +81,69 @@ export class AuthController {
   async getCurrentUser(@Query('token') token: string) {
     return this.authService.getCurrentUser(token);
   }
+
+  @Get('verify-reset-token')
+  @ApiOperation({ summary: 'Verify if reset token is valid' })
+  @ApiQuery({
+    name: 'token',
+    type: 'string',
+    description: 'Reset token to verify',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Token verification result',
+    schema: {
+      type: 'object',
+      properties: {
+        isValid: {
+          type: 'boolean',
+          example: true,
+        },
+      },
+    },
+  })
+  async verifyResetToken(@Query('token') token: string) {
+    return this.authService.verifyResetToken(token);
+  }
+
+  @Post('change-password')
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiQuery({
+    name: 'token',
+    type: 'string',
+    description: 'Access token',
+  })
+  @ApiBody({
+    schema: {
+      properties: {
+        oldPassword: {
+          type: 'string',
+          example: 'currentPassword123',
+        },
+        newPassword: {
+          type: 'string',
+          example: 'newSecurePassword123',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Password changed successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid credentials or token',
+  })
+  async changePassword(
+    @Query('token') token: string,
+    @Body('oldPassword') oldPassword: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    const user = await this.authService.getCurrentUser(token);
+    if (!user) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+    return this.authService.changePassword(user.id, oldPassword, newPassword);
+  }
 }
