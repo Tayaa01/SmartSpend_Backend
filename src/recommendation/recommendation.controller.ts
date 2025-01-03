@@ -9,18 +9,18 @@ export class RecommendationController {
   @Get('generate')
   async generateRecommendation(
     @Query('userToken') userToken: string,
-    @Query('period') period: string,
   ): Promise<Recommendation> {
     try {
-      if (!userToken || !period) {
-        throw new HttpException('Missing userToken or period', HttpStatus.BAD_REQUEST);
+      if (!userToken) {
+        throw new HttpException('Missing userToken', HttpStatus.BAD_REQUEST);
       }
 
-      const recommendation = await this.recommendationService.generateRecommendation(userToken, period);
-      return recommendation;
+      return await this.recommendationService.generateRecommendation(userToken);
     } catch (error) {
-      console.error('Error generating recommendation:', error.message);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Failed to generate recommendations',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

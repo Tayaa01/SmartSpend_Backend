@@ -1,16 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
-@Schema({ timestamps: true })
+// Add export keyword here
+export interface Suggestion {
+  category: string;
+  advice: string;
+}
+
+@Schema()
 export class Recommendation extends Document {
-  @Prop({ type: String, required: true })
-  recommendationText: string; // The AI-generated recommendation text
+  @Prop({ required: true, type: [Object] })
+  suggestions: Suggestion[];
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  user: Types.ObjectId; // Reference to the User who owns this recommendation
+  @Prop({ required: true })
+  user: string;
 
-  @Prop({ type: Date, required: true })
-  date: Date; // The date when the recommendation was generated
+  @Prop({ required: true })
+  date: Date;
 }
 
 export const RecommendationSchema = SchemaFactory.createForClass(Recommendation);
